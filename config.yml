@@ -1,0 +1,102 @@
+# https://github.com/rxtsel/.dot/blob/main/.config/lazygit/config.yml
+---
+customCommands:
+  - key: <c-u>
+    description: Pick AI commit
+    context: files
+    prompts:
+      - type: menuFromCommand
+        title: Select AI Commit Message
+        key: CommitMsg
+        command: "bash -c '~/.config/lazygit/copilot/ai_commit.sh'"
+    command: |
+      # Create a temporary file for the commit message
+      commit_msg_file=$(mktemp)
+
+      # Clean the suggestions and save them to the file
+      commit_suggestions=$(echo "{{.Form.CommitMsg}}" | \
+        sed 's/```[a-zA-Z]*//g' | \
+        sed 's/```//g' | \
+        sed 's/^[ \t]*//g' | \
+        sed 's/[ \t]*$//g')
+
+      # Write the suggestions to the temporary file
+      echo "$commit_suggestions" > "$commit_msg_file"
+
+      # Saves the initial modification timestamp of the file
+      initial_timestamp=$(stat -c %Y "$commit_msg_file" 2>/dev/null || \
+        stat -f %m "$commit_msg_file")
+
+      # Opens the commit message editor and captures the exit code
+      ${EDITOR:-vim} "$commit_msg_file"
+      editor_exit=$?
+
+      # Gets the new modification timestamp
+      new_timestamp=$(stat -c %Y "$commit_msg_file" 2>/dev/null || \
+        stat -f %m "$commit_msg_file")
+
+      # Checks if the editor exited normally and if the file was saved
+      if [ $editor_exit -ne 0 ]; then
+          echo "Editor exited abnormally, commit aborted."
+      elif [ "$initial_timestamp" != "$new_timestamp" ]; then
+          # The file was saved (timestamp has changed)
+          selected_msg=$(grep -v "^#" "$commit_msg_file" | grep -v "^$" | \
+            head -n 1)
+
+          if [ -n "$selected_msg" ]; then
+              echo "Creating commit with message: $selected_msg"
+              git commit -m "$selected_msg"
+          else
+              echo "No commit message selected, commit aborted."
+          fi
+      else
+          echo "File was not saved, commit aborted."
+      fi
+
+      # Clean temp files
+      rm -f "$commit_msg_file"
+    output: terminal
+    loadingText: "Generating AI commit messages with GitHub Copilot"
+
+  - key: "<c-g>"
+    context: "global"
+    description: "GitHub Copilot"
+    prompts:
+      - type: "menu"
+        key: "CopilotAction"
+        title: "GitHub Copilot"
+        options:
+          - name: "Check Status"
+            description: "Show current authentication status"
+            value: "status"
+          - name: "Login"
+            description: "Start authentication flow"
+            value: "login"
+          - name: "Complete Login"
+            description: "Complete authentication after entering device code"
+            value: "complete"
+          - name: "Logout"
+            description: "Clear authentication data"
+            value: "logout"
+          - name: "Test"
+            description: "Test current authentication"
+            value: "test"
+    command: "bash -c '~/.config/lazygit/copilot/copilot.sh {{.Form.CopilotAction}}'"
+    output: "popup"
+    loadingText: "Processing GitHub Copilot..."
+
+  - key: "<c-n>"
+    context: "global"
+    description: "Select AI Model"
+    prompts:
+      - type: "menuFromCommand"
+        key: "SelectedModel"
+        title: "Choose AI Model"
+        command: "bash -c '~/.config/lazygit/copilot/models.sh menu'"
+      - type: "confirm"
+        key: "Confirm"
+        title: "Set Model"
+        body: "Set AI model to: {{.Form.SelectedModel}}?"
+    command: 'bash -c ''~/.config/lazygit/copilot/models.sh set "{{.Form.SelectedModel}}"'''
+    output: "popup"
+    loadingText: "Setting AI model..."

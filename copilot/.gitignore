@@ -1,0 +1,6 @@
+# GitHub Copilot authentication data
+auth.json
+
+# Model cache and selection
+models_cache.json
+selected_model.txt

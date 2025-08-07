@@ -1,0 +1,22 @@
+# Authentication and cache files
+copilot/auth.json
+copilot/models_cache.json
+copilot/selected_model.txt
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
