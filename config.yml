@@ -1,4 +1,3 @@
-# https://github.com/rxtsel/.dot/blob/main/.config/lazygit/config.yml
 ---
 customCommands:
   - key: <c-u>
