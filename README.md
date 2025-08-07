@@ -2,6 +2,12 @@
 
 A comprehensive lazygit configuration that integrates GitHub Copilot for AI-powered commit message generation and advanced git workflow enhancements.
 
+## Screenshots
+
+![LazyCommit Overview](images/lazycommit.png)
+
+![AI Commit Generation](images/lazycommit-commit.png)
+
 ## Features
 
 - 🤖 **AI Commit Messages**: Generate intelligent commit messages using GitHub Copilot
