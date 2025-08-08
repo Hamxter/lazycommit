@@ -10,8 +10,8 @@ source "$MODELS_SCRIPT_DIR/auth_utils.sh"
 
 # Configuration
 readonly MODELS_API_URL="https://api.githubcopilot.com/models"
-readonly MODELS_CACHE_FILE="$MODELS_SCRIPT_DIR/models_cache.json"
-readonly USER_MODEL_FILE="$MODELS_SCRIPT_DIR/selected_model.txt"
+readonly MODELS_CACHE_FILE="$MODELS_SCRIPT_DIR/../models_cache.json"
+readonly USER_MODEL_FILE="$MODELS_SCRIPT_DIR/../selected_model.txt"
 readonly CACHE_EXPIRY_HOURS=24
 
 # Default fallback models (in order of preference) - These are Copilot-compatible
@@ -34,12 +34,15 @@ fetch_models_from_api() {
     log_debug "Fetching models from GitHub Copilot API..."
     
     local response
-    response=$(curl -s "$MODELS_API_URL" \
+    if ! response=$(curl -s "$MODELS_API_URL" \
         -H "Accept: application/json" \
         -H "Authorization: Bearer $copilot_token" \
         -H "User-Agent: $USER_AGENT" \
         -H "Editor-Version: vscode/1.99.3" \
-        -H "Editor-Plugin-Version: copilot-chat/0.26.7" 2>/dev/null)
+        -H "Editor-Plugin-Version: copilot-chat/0.26.7" 2>&1); then
+        log_debug "curl failed when fetching models from API"
+        return 1
+    fi
     
     if echo "$response" | jq -e '.data[0].id' > /dev/null 2>&1; then
         echo "$response" > "$MODELS_CACHE_FILE"
@@ -217,6 +220,19 @@ refresh_models() {
         return 1
     fi
 }
+
+# Check dependencies before running any command that needs them
+case "${1:-list}" in
+    list|detailed|detail|ids|refresh|menu)
+        check_dependencies
+        ;;
+    current|selected)
+        # These commands only read files, don't need curl/jq
+        ;;
+    set)
+        check_dependencies
+        ;;
+esac
 
 case "${1:-list}" in
     list)

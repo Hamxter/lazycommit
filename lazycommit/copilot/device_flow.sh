@@ -12,12 +12,15 @@ start_device_flow() {
     log_debug "Starting device code flow..."
     
     local response
-    response=$(curl -s "$DEVICE_CODE_URL" \
+    if ! response=$(curl -s "$DEVICE_CODE_URL" \
         -X POST \
         -H "Accept: application/json" \
         -H "Content-Type: application/json" \
         -H "User-Agent: $USER_AGENT" \
-        -d "{\"client_id\": \"$CLIENT_ID\", \"scope\": \"read:user\"}")
+        -d "{\"client_id\": \"$CLIENT_ID\", \"scope\": \"read:user\"}" 2>&1); then
+        log_error "curl failed when starting device flow"
+        exit $EXIT_NETWORK_ERROR
+    fi
     
     if ! echo "$response" | jq -e '.device_code' > /dev/null 2>&1; then
         log_error "Failed to get device code: $response"
@@ -25,11 +28,30 @@ start_device_flow() {
     fi
     
     local device_code user_code verification_uri interval expires_in
-    device_code=$(echo "$response" | jq -r '.device_code')
-    user_code=$(echo "$response" | jq -r '.user_code')
-    verification_uri=$(echo "$response" | jq -r '.verification_uri')
-    interval=$(echo "$response" | jq -r '.interval // 5')
-    expires_in=$(echo "$response" | jq -r '.expires_in')
+    if ! device_code=$(echo "$response" | jq -r '.device_code' 2>&1); then
+        log_error "jq failed to parse device_code from response"
+        exit $EXIT_JSON_ERROR
+    fi
+    
+    if ! user_code=$(echo "$response" | jq -r '.user_code' 2>&1); then
+        log_error "jq failed to parse user_code from response"
+        exit $EXIT_JSON_ERROR
+    fi
+    
+    if ! verification_uri=$(echo "$response" | jq -r '.verification_uri' 2>&1); then
+        log_error "jq failed to parse verification_uri from response"
+        exit $EXIT_JSON_ERROR
+    fi
+    
+    if ! interval=$(echo "$response" | jq -r '.interval // 5' 2>&1); then
+        log_error "jq failed to parse interval from response"
+        exit $EXIT_JSON_ERROR
+    fi
+    
+    if ! expires_in=$(echo "$response" | jq -r '.expires_in' 2>&1); then
+        log_error "jq failed to parse expires_in from response"
+        exit $EXIT_JSON_ERROR
+    fi
     
     # Store device code temporarily
     set_auth_field "device_code" "$device_code"
@@ -72,7 +94,7 @@ poll_device_authorization() {
     
     while [[ $attempt -lt $max_attempts ]]; do
         local response
-        response=$(curl -s "$ACCESS_TOKEN_URL" \
+        if ! response=$(curl -s "$ACCESS_TOKEN_URL" \
             -X POST \
             -H "Accept: application/json" \
             -H "Content-Type: application/json" \
@@ -81,11 +103,21 @@ poll_device_authorization() {
                 \"client_id\": \"$CLIENT_ID\",
                 \"device_code\": \"$device_code\",
                 \"grant_type\": \"urn:ietf:params:oauth:grant-type:device_code\"
-            }")
+            }" 2>&1); then
+            log_error "curl failed during authorization polling"
+            exit $EXIT_NETWORK_ERROR
+        fi
         
         local error access_token
-        error=$(echo "$response" | jq -r '.error // ""')
-        access_token=$(echo "$response" | jq -r '.access_token // ""')
+        if ! error=$(echo "$response" | jq -r '.error // ""' 2>&1); then
+            log_error "jq failed to parse error from response"
+            exit $EXIT_JSON_ERROR
+        fi
+        
+        if ! access_token=$(echo "$response" | jq -r '.access_token // ""' 2>&1); then
+            log_error "jq failed to parse access_token from response"
+            exit $EXIT_JSON_ERROR
+        fi
         
         if [[ -n "$access_token" ]]; then
             # Success! Store the GitHub token

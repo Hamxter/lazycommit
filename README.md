@@ -1,6 +1,7 @@
 # LazyCommit
 
-A comprehensive lazygit configuration that integrates GitHub Copilot for AI-powered commit message generation and advanced git workflow enhancements.
+A comprehensive lazygit configuration that integrates GitHub Copilot for
+AI-powered commit message generation and advanced git workflow enhancements.
 
 ## Screenshots
 
@@ -20,15 +21,57 @@ A comprehensive lazygit configuration that integrates GitHub Copilot for AI-powe
 
 ### Installation
 
-**Important**: This configuration must be cloned into your lazygit config directory:
+Choose one of the following installation methods:
+
+#### Option 1: Fresh Installation (Recommended for new users)
 
 ```bash
-# Remove existing lazygit config (backup first if needed)
+# Backup existing lazygit config (if any)
 mv ~/.config/lazygit ~/.config/lazygit.backup 2>/dev/null || true
 
 # Clone this repository
-git clone https://github.com/yourusername/lazycommit.git ~/.config/lazygit
+git clone https://github.com/Hamxter/lazycommit.git ~/.config/lazygit
 ```
+
+#### Option 2: Add to Existing Configuration
+
+If you already have lazygit configured:
+
+```bash
+# Clone the repository to a temporary location
+git clone https://github.com/Hamxter/lazycommit.git /tmp/lazycommit
+
+# Copy just the lazycommit folder
+cp -r /tmp/lazycommit/lazycommit ~/.config/lazygit/
+```
+
+Then choose one of:
+
+#### Option 2a: Replace your config.yml
+
+```bash
+# Backup your current config
+cp ~/.config/lazygit/config.yml ~/.config/lazygit/config.yml.backup
+
+# Use the LazyCommit config
+cp /tmp/lazycommit/config.yml ~/.config/lazygit/config.yml
+
+# Clean up
+rm -rf /tmp/lazycommit
+```
+
+#### Option 2b: Append to your existing config.yml
+
+```bash
+# Add LazyCommit commands to your existing config
+cat /tmp/lazycommit/config.yml >> ~/.config/lazygit/config.yml
+
+# Clean up
+rm -rf /tmp/lazycommit
+```
+
+**Note**: If your existing config already has a `customCommands` section,
+you'll need to manually merge the commands instead of using the append method above.
 
 ### Prerequisites
 
@@ -76,18 +119,22 @@ Switch between available AI models for commit generation.
 
 ## File Structure
 
-```
+```text
 ~/.config/lazygit/
 ├── config.yml              # Main lazygit configuration
-├── commit_prompt.txt       # AI prompt template
-├── copilot/                 # AI integration scripts
-│   ├── ai_commit.sh        # Commit message generation
-│   ├── auth.sh             # Authentication management
-│   ├── auth_utils.sh       # Authentication utilities
-│   ├── copilot.sh          # Main controller script
-│   ├── device_flow.sh      # GitHub device flow
-│   └── models.sh           # Model management
-└── README.md               # This file
+├── lazycommit/              # LazyCommit integration
+│   ├── commit_prompt.txt    # AI prompt template
+│   ├── auth.json            # Authentication data (auto-generated)
+│   ├── models_cache.json    # Cached AI models (auto-generated)
+│   ├── selected_model.txt   # User's preferred model (auto-generated)
+│   └── copilot/             # AI integration scripts
+│       ├── ai_commit.sh     # Commit message generation
+│       ├── auth.sh          # Authentication management
+│       ├── auth_utils.sh    # Authentication utilities
+│       ├── copilot.sh       # Main controller script
+│       ├── device_flow.sh   # GitHub device flow
+│       └── models.sh        # Model management
+└── README.md                # This file
 ```
 
 ## Troubleshooting
@@ -96,14 +143,21 @@ Switch between available AI models for commit generation.
 
 ```bash
 # Check authentication status
-~/.config/lazygit/copilot/copilot.sh status
+~/.config/lazygit/lazycommit/copilot/copilot.sh status
 
 # Re-authenticate if needed
-~/.config/lazygit/copilot/copilot.sh logout
-~/.config/lazygit/copilot/copilot.sh login
+~/.config/lazygit/lazycommit/copilot/copilot.sh logout
+~/.config/lazygit/lazycommit/copilot/copilot.sh login
 ```
 
 ### Permission Errors
+
+If you encounter permission issues with the scripts:
+
+```bash
+# Make scripts executable
+chmod +x ~/.config/lazygit/lazycommit/copilot/*.sh
+```
 
 ### API Errors
 
@@ -115,10 +169,10 @@ Switch between available AI models for commit generation.
 
 ### Modify AI Prompts
 
-Edit `commit_prompt.txt` to customize commit message generation:
+Edit `lazycommit/commit_prompt.txt` to customize commit message generation:
 
 ```bash
-$EDITOR ~/.config/lazygit/commit_prompt.txt
+$EDITOR ~/.config/lazygit/lazycommit/commit_prompt.txt
 ```
 
 ### Add Custom Commands
@@ -127,7 +181,10 @@ Extend `config.yml` with additional custom commands following the existing patte
 
 ## Repository as Subdirectory
 
-This configuration is designed to work as a standalone repository within your dotfiles or as an independent clone. The scripts use absolute paths (`~/.config/lazygit/`) to ensure compatibility regardless of the parent repository structure.
+This configuration is designed to work as a standalone repository within
+your dotfiles or as an independent clone. The scripts use absolute paths
+(`~/.config/lazygit/lazycommit/`) to ensure compatibility regardless of
+the parent repository structure.
 
 ## Contributing
 
@@ -144,9 +201,11 @@ MIT License - see LICENSE file for details.
 ## Acknowledgments
 
 - [lazygit](https://github.com/jesseduffield/lazygit) - Amazing terminal UI for git
-- [GitHub Copilot](https://github.com/features/copilot) - AI pair programmer  
-- [rxtsel's dotfiles](https://github.com/rxtsel/.dot) - Original configuration inspiration and foundation for this project
-- [m7medVision/lazycommit](https://github.com/m7medVision/lazycommit) - Another excellent AI commit message tool for lazygit
+- [GitHub Copilot](https://github.com/features/copilot) - AI pair programmer
+- [rxtsel's dotfiles](https://github.com/rxtsel/.dot) - Original configuration
+  inspiration and foundation for this project
+- [m7medVision/lazycommit](https://github.com/m7medVision/lazycommit) - Another
+  excellent AI commit message tool for lazygit
 
 ## Support
 
@@ -158,5 +217,5 @@ If you encounter issues:
 
 ---
 
-**Note**: This is a community-maintained configuration. It is not officially affiliated with GitHub or the lazygit project.
-
+**Note**: This is a community-maintained configuration. It is not officially
+affiliated with GitHub or the lazygit project.

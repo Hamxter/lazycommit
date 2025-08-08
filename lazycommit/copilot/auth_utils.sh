@@ -14,7 +14,7 @@ readonly USER_AGENT="GitHubCopilotChat/0.26.7"
 
 # File paths
 readonly AUTH_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly AUTH_FILE="$AUTH_SCRIPT_DIR/auth.json"
+readonly AUTH_FILE="$AUTH_SCRIPT_DIR/../auth.json"
 
 # Exit codes
 readonly EXIT_SUCCESS=0
@@ -38,12 +38,37 @@ log_debug() {
 
 check_dependencies() {
     local deps=("jq" "curl")
+    local missing_deps=()
+    
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
-            log_error "Required dependency '$dep' not found"
-            exit 1
+            missing_deps+=("$dep")
         fi
     done
+    
+    if [[ ${#missing_deps[@]} -gt 0 ]]; then
+        log_error "Missing required dependencies: ${missing_deps[*]}"
+        echo "" >&2
+        echo "Please install the missing dependencies:" >&2
+        for dep in "${missing_deps[@]}"; do
+            case "$dep" in
+                "jq")
+                    echo "  • jq: JSON processor" >&2
+                    echo "    Ubuntu/Debian: sudo apt-get install jq" >&2
+                    echo "    macOS: brew install jq" >&2
+                    echo "    Arch: sudo pacman -S jq" >&2
+                    ;;
+                "curl")
+                    echo "  • curl: HTTP client" >&2
+                    echo "    Ubuntu/Debian: sudo apt-get install curl" >&2
+                    echo "    macOS: brew install curl (or use system curl)" >&2
+                    echo "    Arch: sudo pacman -S curl" >&2
+                    ;;
+            esac
+            echo "" >&2
+        done
+        exit 1
+    fi
 }
 
 create_auth_file() {
@@ -128,12 +153,15 @@ refresh_copilot_token() {
     log_debug "Refreshing Copilot token..."
     
     local response
-    response=$(curl -s "$COPILOT_API_KEY_URL" \
+    if ! response=$(curl -s "$COPILOT_API_KEY_URL" \
         -H "Accept: application/json" \
         -H "Authorization: Bearer $github_token" \
         -H "User-Agent: $USER_AGENT" \
         -H "Editor-Version: vscode/1.99.3" \
-        -H "Editor-Plugin-Version: copilot-chat/0.26.7")
+        -H "Editor-Plugin-Version: copilot-chat/0.26.7" 2>&1); then
+        log_debug "curl failed when refreshing Copilot token"
+        return 1
+    fi
     
     if ! echo "$response" | jq -e '.token' > /dev/null 2>&1; then
         log_debug "Failed to refresh Copilot token: $response"
@@ -141,8 +169,15 @@ refresh_copilot_token() {
     fi
     
     local copilot_token copilot_expires
-    copilot_token=$(echo "$response" | jq -r '.token')
-    copilot_expires=$(echo "$response" | jq -r '.expires_at')
+    if ! copilot_token=$(echo "$response" | jq -r '.token' 2>&1); then
+        log_debug "jq failed to parse token from response"
+        return 1
+    fi
+    
+    if ! copilot_expires=$(echo "$response" | jq -r '.expires_at' 2>&1); then
+        log_debug "jq failed to parse expires_at from response"
+        return 1
+    fi
     
     set_auth_field "copilot_token" "$copilot_token"
     set_auth_field "copilot_expires" "$copilot_expires"
