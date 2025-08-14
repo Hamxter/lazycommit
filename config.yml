@@ -9,7 +9,7 @@ customCommands:
         title: Select AI Commit Message
         key: CommitMsg
         command: "bash -c '~/.config/lazygit/lazycommit/copilot/ai_commit.sh'"
-    command: 'bash -c ''~/.config/lazygit/lazycommit/process_commit.sh "{{.Form.CommitMsg}}"'''
+    command: "~/.config/lazygit/lazycommit/commit_wrapper.sh \"{{.Form.CommitMsg}}\""
     output: terminal
     loadingText: "Generating AI commit messages with GitHub Copilot"
 
