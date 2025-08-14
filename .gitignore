@@ -20,3 +20,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Local configuration files
+config.local.yml
+sync-forgejo-config.sh
