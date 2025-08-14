@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Script to process AI-generated commit messages
-# Takes the selected commit message as an argument and handles the commit flow
+# Takes the selected commit message from stdin and handles the commit flow
 
-commit_suggestions="$1"
+# Read commit suggestions from stdin
+commit_suggestions=$(cat)
 
 # Create a temporary file for the commit message
 commit_msg_file=$(mktemp)
