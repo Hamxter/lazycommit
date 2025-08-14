@@ -9,11 +9,13 @@ commit_suggestions="$1"
 commit_msg_file=$(mktemp)
 
 # Clean the suggestions and save them to the file
+# Decode the ¦ delimiter back to newlines for proper multi-line commit messages
 cleaned_suggestions=$(echo "$commit_suggestions" | \
   sed 's/```[a-zA-Z]*//g' | \
   sed 's/```//g' | \
   sed 's/^[ \t]*//g' | \
-  sed 's/[ \t]*$//g')
+  sed 's/[ \t]*$//g' | \
+  tr '¦' '\n')
 
 # Write the suggestions to the temporary file
 echo "$cleaned_suggestions" > "$commit_msg_file"
@@ -35,12 +37,13 @@ if [ $editor_exit -ne 0 ]; then
     echo "Editor exited abnormally, commit aborted."
 elif [ "$initial_timestamp" != "$new_timestamp" ]; then
     # The file was saved (timestamp has changed)
-    selected_msg=$(grep -v "^#" "$commit_msg_file" | grep -v "^$" | \
-      head -n 1)
+    selected_msg=$(grep -v "^#" "$commit_msg_file" | sed '/^[[:space:]]*$/d')
 
     if [ -n "$selected_msg" ]; then
-        echo "Creating commit with message: $selected_msg"
-        git commit -m "$selected_msg"
+        echo "Creating commit with message:"
+        echo "$selected_msg"
+        echo ""
+        git commit -F "$commit_msg_file"
     else
         echo "No commit message selected, commit aborted."
     fi
