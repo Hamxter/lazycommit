@@ -174,9 +174,15 @@ extract_commit_messages() {
         exit $AI_EXIT_API_ERROR
     fi
     
+    # Clean the content and encode multi-line as single line with ¦ as delimiter
+    # This allows lazygit's menuFromCommand to show it as one option
     echo "$content" | \
-        grep -E '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore)' | \
-        head -10
+        sed 's/```[a-zA-Z]*//g' | \
+        sed 's/```//g' | \
+        sed '/^[[:space:]]*$/d' | \
+        sed 's/^[[:space:]]*//; s/[[:space:]]*$//' | \
+        tr '\n' '¦' | \
+        sed 's/¦$//'
 }
 
 main() {
