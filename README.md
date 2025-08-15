@@ -199,17 +199,6 @@ cd ~/.config/lazygit/lazycommit && git pull
 ~/.config/lazygit/lazycommit/providers/copilot/copilot.sh login
 ```
 
-### Permission Errors
-
-If you encounter permission issues with the scripts:
-
-```bash
-# Make scripts executable
-chmod +x ~/.config/lazygit/lazycommit/core/*.sh
-chmod +x ~/.config/lazygit/lazycommit/lib/*.sh
-chmod +x ~/.config/lazygit/lazycommit/providers/copilot/*.sh
-```
-
 ### API Errors
 
 - Ensure you have active GitHub Copilot subscription
@@ -217,30 +206,6 @@ chmod +x ~/.config/lazygit/lazycommit/providers/copilot/*.sh
 - Verify authentication with test command
 
 ## Customization
-
-### Provider Architecture
-
-LazyCommit uses a modular provider system that makes it easy to add new AI providers:
-
-```text
-providers/
-├── copilot/                    # GitHub Copilot provider
-│   ├── provider.sh            # AI provider interface implementation
-│   ├── models.sh              # Model provider interface implementation
-│   └── copilot.sh             # Provider-specific management commands
-└── [future-provider]/         # Additional providers can be added here
-    ├── provider.sh
-    ├── models.sh
-    └── [provider].sh
-```
-
-**Adding New Providers:**
-
-1. Create `providers/{name}/` directory
-2. Implement `provider.sh` with `generate_ai_commit()` function
-3. Implement `models.sh` with model management functions
-4. Create management script with provider-specific commands
-5. Update `selected_provider.txt` to use new provider
 
 ### Using Multiple Config Files (Recommended)
 
