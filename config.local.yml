@@ -1,0 +1,6 @@
+services:
+  forgejo.mclo.vin: gitea:forgejo.mclo.vin
+
+os:
+  # Configure link opening for WSL environment
+  openLink: 'wslview {{link}}'
