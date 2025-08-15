@@ -8,8 +8,8 @@ customCommands:
       - type: menuFromCommand
         title: Select AI Commit Message
         key: CommitMsg
-        command: "bash -c '~/.config/lazygit/lazycommit/core/ai_commit.sh'"
-    command: '~/.config/lazygit/lazycommit/core/commit.sh "{{.Form.CommitMsg}}"'
+        command: 'bash -c "bash $HOME/.config/lazygit/lazycommit/core/ai_commit.sh"'
+    command: 'bash -c "bash $HOME/.config/lazygit/lazycommit/core/commit.sh \"{{.Form.CommitMsg}}\""'
     output: terminal
     loadingText: "Generating AI commit messages with GitHub Copilot"
 
@@ -36,7 +36,7 @@ customCommands:
           - name: "Test"
             description: "Test current authentication"
             value: "test"
-    command: '~/.config/lazygit/lazycommit/providers/copilot/copilot.sh "{{.Form.CopilotAction}}"'
+    command: 'bash -c "bash $HOME/.config/lazygit/lazycommit/providers/copilot/copilot.sh \"{{.Form.CopilotAction}}\""'
     output: "popup"
     loadingText: "Processing GitHub Copilot..."
 
@@ -47,11 +47,11 @@ customCommands:
       - type: "menuFromCommand"
         key: "SelectedModel"
         title: "Choose AI Model"
-        command: "bash -c '~/.config/lazygit/lazycommit/core/models.sh menu'"
+        command: "bash -c 'bash $HOME/.config/lazygit/lazycommit/core/models.sh menu'"
       - type: "confirm"
         key: "Confirm"
         title: "Set Model"
         body: "Set AI model to: {{.Form.SelectedModel}}?"
-    command: '~/.config/lazygit/lazycommit/core/models.sh set "{{.Form.SelectedModel}}"'
+    command: 'bash -c "bash $HOME/.config/lazygit/lazycommit/core/models.sh set \"{{.Form.SelectedModel}}\""'
     output: "popup"
     loadingText: "Setting AI model..."
