@@ -36,7 +36,7 @@ customCommands:
           - name: "Test"
             description: "Test current authentication"
             value: "test"
-    command: "bash -c '~/.config/lazygit/lazycommit/copilot/copilot.sh {{.Form.CopilotAction}}'"
+    command: '~/.config/lazygit/lazycommit/copilot/copilot.sh "{{.Form.CopilotAction}}"'
     output: "popup"
     loadingText: "Processing GitHub Copilot..."
 
@@ -52,6 +52,6 @@ customCommands:
         key: "Confirm"
         title: "Set Model"
         body: "Set AI model to: {{.Form.SelectedModel}}?"
-    command: 'bash -c ''~/.config/lazygit/lazycommit/copilot/models.sh set "{{.Form.SelectedModel}}"'''
+    command: '~/.config/lazygit/lazycommit/copilot/models.sh set "{{.Form.SelectedModel}}"'
     output: "popup"
     loadingText: "Setting AI model..."
