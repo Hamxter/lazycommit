@@ -1,7 +1,9 @@
 # LazyCommit
 
-A comprehensive lazygit configuration that integrates GitHub Copilot for
-AI-powered commit message generation and advanced git workflow enhancements.
+A comprehensive lazygit configuration with modular AI provider support for
+intelligent commit message generation and advanced git workflow enhancements.
+Currently supports GitHub Copilot with a clean architecture for adding
+additional AI providers.
 
 ## Screenshots
 
@@ -11,9 +13,12 @@ AI-powered commit message generation and advanced git workflow enhancements.
 
 ## Features
 
-- 🤖 **AI Commit Messages**: Generate intelligent commit messages using GitHub Copilot
+- 🤖 **AI Commit Messages**: Generate intelligent commit messages using AI providers
 - 🎯 **Multiple AI Models**: Support for different AI models with easy switching
-- 🔐 **Secure Authentication**: Built-in GitHub Copilot authentication flow
+- 🔌 **Provider Architecture**: Modular system supporting multiple AI providers
+  (GitHub Copilot included)
+- 📝 **Custom Prompts**: Use custom commit prompt templates
+- 🔐 **Secure Authentication**: Built-in authentication flows per provider
 - ⚡ **Custom Commands**: Powerful keyboard shortcuts for enhanced productivity
 - 🎨 **Interactive Menus**: User-friendly selection interfaces
 
@@ -21,89 +26,62 @@ AI-powered commit message generation and advanced git workflow enhancements.
 
 ### Installation
 
-**Recommended**: Clone this repository and use lazygit's multiple config file support for easy customization.
+Clone LazyCommit directly to the proper location and use lazygit's multiple
+config file support for seamless integration.
 
-#### Option 1: Multiple Config Files (Recommended)
-
-This approach allows you to keep your personal lazygit settings while using LazyCommit features:
+#### Step 1: Clone to the Correct Location
 
 ```bash
-# Backup existing lazygit config (if any)
-mv ~/.config/lazygit ~/.config/lazygit.backup 2>/dev/null || true
-
-# Clone this repository
-git clone https://github.com/Hamxter/lazycommit.git ~/.config/lazygit
-
-# If you had a previous config, copy it as your local config:
-cp ~/.config/lazygit.backup/config.yml ~/.config/lazygit/config.local.yml
-
-# Or create an empty local config file for customizations:
-touch ~/.config/lazygit/config.local.yml
+# Clone LazyCommit to the lazygit lazycommit subdirectory
+git clone https://github.com/Hamxter/lazycommit.git ~/.config/lazygit/lazycommit
 ```
 
-**Method A: Environment Variable (Recommended)**
+#### Step 2: Configure Multiple Config Files
+
+LazyCommit uses lazygit's multiple config file feature. You need to tell
+lazygit to load both the LazyCommit config and your personal config.
+
+#### Method A: Environment Variable (Recommended)
 
 Add to your shell config (`~/.zshrc`, `~/.bashrc`, etc.):
 
 ```bash
 # LAZYGIT - Use multiple config files
-export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml,$HOME/.config/lazygit/config.local.yml"
+export LG_CONFIG_FILE="$HOME/.config/lazygit/lazycommit/config.yml,$HOME/.config/lazygit/config.yml"
 ```
 
-**Method B: Shell Alias**
+#### Method B: Shell Alias
 
 ```bash
 # Add to ~/.bashrc, ~/.zshrc, etc.
-alias lg='lazygit --use-config-file="~/.config/lazygit/config.yml,~/.config/lazygit/config.local.yml"'
+alias lg='lazygit --use-config-file="~/.config/lazygit/lazycommit/config.yml,~/.config/lazygit/config.yml"'
+```
+
+#### Step 3: Create Your Personal Config
+
+Create your personal lazygit config file:
+
+```bash
+# Create your personal config file (if it doesn't exist)
+touch ~/.config/lazygit/config.yml
+
+# Or copy from existing backup if you have one
+# cp ~/.config/lazygit.backup/config.yml ~/.config/lazygit/config.yml
 ```
 
 **Benefits of this approach:**
 
-- Keep your existing lazygit configuration intact
-- Easy to customize LazyCommit settings in `config.local.yml`
-- Simple updates by pulling the latest changes
-- Can easily disable by removing the environment variable or alias
-- Environment variable method works with any lazygit invocation (recommended)
-- Alias method gives you a separate command (`lg`) for LazyCommit-enabled lazygit
-
-#### Option 2: Fresh Installation (For new lazygit users)
-
-```bash
-# Backup existing lazygit config (if any)
-mv ~/.config/lazygit ~/.config/lazygit.backup 2>/dev/null || true
-
-# Clone this repository
-git clone https://github.com/Hamxter/lazycommit.git ~/.config/lazygit
-```
-
-#### Option 3: Traditional Merge (Legacy approach)
-
-If you prefer to merge configurations manually:
-
-```bash
-# Clone the repository to a temporary location
-git clone https://github.com/Hamxter/lazycommit.git /tmp/lazycommit
-
-# Copy just the lazycommit folder
-cp -r /tmp/lazycommit/lazycommit ~/.config/lazygit/
-
-# Backup your current config
-cp ~/.config/lazygit/config.yml ~/.config/lazygit/config.yml.backup
-
-# Use the LazyCommit config or manually merge
-cp /tmp/lazycommit/config.yml ~/.config/lazygit/config.yml
-
-# Clean up
-rm -rf /tmp/lazycommit
-```
-
-**Note**: If your existing config already has a `customCommands` section,
-you'll need to manually merge the commands instead of replacing the entire file.
+- ✅ LazyCommit functionality is immediately available
+- ✅ Your personal lazygit settings override LazyCommit defaults
+- ✅ Easy updates by pulling the latest changes in the lazycommit subdirectory
+- ✅ Clean separation between LazyCommit features and personal configuration
+- ✅ Can easily disable by removing the environment variable or alias
+- ✅ Environment variable method works with any lazygit invocation (recommended)
 
 ### Prerequisites
 
 - [lazygit](https://github.com/jesseduffield/lazygit) installed
-- GitHub account with Copilot access
+- GitHub account with Copilot access (for GitHub Copilot provider)
 - `curl` and `jq` for API interactions
 
 ### Authentication Setup
@@ -119,7 +97,7 @@ you'll need to manually merge the commands instead of replacing the entire file.
 | Key | Context | Description |
 |-----|---------|-------------|
 | `Ctrl+U` | Files | Generate AI commit message |
-| `Ctrl+G` | Global | GitHub Copilot management |
+| `Ctrl+G` | Global | AI provider management (GitHub Copilot) |
 | `Ctrl+N` | Global | Select AI model |
 
 ## Commands
@@ -132,7 +110,9 @@ you'll need to manually merge the commands instead of replacing the entire file.
 4. Edit the message if needed
 5. Commit automatically applies
 
-### Copilot Management (`Ctrl+G`)
+### AI Provider Management (`Ctrl+G`)
+
+Access provider-specific management options. For GitHub Copilot:
 
 - **Check Status**: View current authentication state
 - **Login**: Start GitHub authentication flow
@@ -146,46 +126,43 @@ Switch between available AI models for commit generation.
 
 ## File Structure
 
-### Recommended Multiple Config Setup
+### Multiple Config Setup (Recommended)
 
 ```text
 ~/.config/lazygit/
-├── config.yml               # LazyCommit configuration
-├── config.local.yml         # Your personal lazygit settings
-├── lazycommit/              # LazyCommit integration
-│   ├── commit_prompt.txt    # AI prompt template
-│   ├── auth.json            # Authentication data (auto-generated)
-│   ├── models_cache.json    # Cached AI models (auto-generated)
-│   ├── selected_model.txt   # User's preferred model (auto-generated)
-│   └── copilot/             # AI integration scripts
-│       ├── ai_commit.sh     # Commit message generation
-│       ├── auth.sh          # Authentication management
-│       ├── auth_utils.sh    # Authentication utilities
-│       ├── copilot.sh       # Main controller script
-│       ├── device_flow.sh   # GitHub device flow
-│       └── models.sh        # Model management
-└── README.md                # This file
+├── config.yml                     # Your personal lazygit settings
+├── lazycommit/                     # LazyCommit repository (git clone location)
+│   ├── config.yml                 # LazyCommit configuration
+│   ├── commit_prompt.txt          # Default AI prompt template
+│   ├── core/                      # Main executable scripts
+│   │   ├── ai_commit.sh           # AI commit generation entry point
+│   │   ├── commit.sh              # Commit wrapper script
+│   │   └── models.sh              # Model management entry point
+│   ├── lib/                       # Shared utilities and interfaces
+│   │   ├── ai_interface.sh        # Generic AI provider interface
+│   │   ├── models_interface.sh    # Generic model management interface
+│   │   ├── process_commit.sh      # Commit processing utilities
+│   │   └── prompt_utils.sh        # Prompt and git context utilities
+│   ├── providers/                 # AI provider implementations
+│   │   └── copilot/              # GitHub Copilot provider
+│   │       ├── auth.sh, auth_utils.sh, device_flow.sh
+│   │       ├── copilot.sh        # Main Copilot controller
+│   │       ├── models.sh         # Copilot model provider
+│   │       └── provider.sh       # Copilot AI provider implementation
+│   ├── selected_model.txt         # User's preferred model (auto-generated)
+│   ├── selected_provider.txt      # User's preferred provider (auto-generated)
+│   ├── auth.json                  # Authentication data (auto-generated)
+│   ├── models_cache.json          # Cached AI models (auto-generated)
+│   ├── images/                    # Screenshots and documentation images
+│   ├── README.md                  # This file
+│   └── LICENSE                    # License file
 ```
 
-### Traditional Single Config Setup
+**Config Loading Order:**
 
-```text
-~/.config/lazygit/
-├── config.yml              # Main lazygit configuration
-├── lazycommit/              # LazyCommit integration
-│   ├── commit_prompt.txt    # AI prompt template
-│   ├── auth.json            # Authentication data (auto-generated)
-│   ├── models_cache.json    # Cached AI models (auto-generated)
-│   ├── selected_model.txt   # User's preferred model (auto-generated)
-│   └── copilot/             # AI integration scripts
-│       ├── ai_commit.sh     # Commit message generation
-│       ├── auth.sh          # Authentication management
-│       ├── auth_utils.sh    # Authentication utilities
-│       ├── copilot.sh       # Main controller script
-│       ├── device_flow.sh   # GitHub device flow
-│       └── models.sh        # Model management
-└── README.md                # This file
-```
+1. `~/.config/lazygit/lazycommit/config.yml` (LazyCommit features)
+2. `~/.config/lazygit/config.yml` (Your personal settings - overrides
+   LazyCommit defaults)
 
 ## Troubleshooting
 
@@ -201,25 +178,25 @@ echo $LG_CONFIG_FILE
 lazygit --help
 
 # Or test with explicit config files
-lazygit --use-config-file="~/.config/lazygit/config.yml,~/.config/lazygit/config.local.yml" --help
+lazygit --use-config-file="~/.config/lazygit/lazycommit/config.yml,~/.config/lazygit/config.yml" --help
 
 # Check if files exist
+ls -la ~/.config/lazygit/lazycommit/config.yml
 ls -la ~/.config/lazygit/config.yml
-ls -la ~/.config/lazygit/config.local.yml
 
 # Update LazyCommit
-cd ~/.config/lazygit && git pull
+cd ~/.config/lazygit/lazycommit && git pull
 ```
 
 ### Authentication Issues
 
 ```bash
 # Check authentication status
-~/.config/lazygit/lazycommit/copilot/copilot.sh status
+~/.config/lazygit/lazycommit/providers/copilot/copilot.sh status
 
 # Re-authenticate if needed
-~/.config/lazygit/lazycommit/copilot/copilot.sh logout
-~/.config/lazygit/lazycommit/copilot/copilot.sh login
+~/.config/lazygit/lazycommit/providers/copilot/copilot.sh logout
+~/.config/lazygit/lazycommit/providers/copilot/copilot.sh login
 ```
 
 ### Permission Errors
@@ -228,7 +205,9 @@ If you encounter permission issues with the scripts:
 
 ```bash
 # Make scripts executable
-chmod +x ~/.config/lazygit/lazycommit/copilot/*.sh
+chmod +x ~/.config/lazygit/lazycommit/core/*.sh
+chmod +x ~/.config/lazygit/lazycommit/lib/*.sh
+chmod +x ~/.config/lazygit/lazycommit/providers/copilot/*.sh
 ```
 
 ### API Errors
@@ -239,21 +218,39 @@ chmod +x ~/.config/lazygit/lazycommit/copilot/*.sh
 
 ## Customization
 
+### Provider Architecture
+
+LazyCommit uses a modular provider system that makes it easy to add new AI providers:
+
+```text
+providers/
+├── copilot/                    # GitHub Copilot provider
+│   ├── provider.sh            # AI provider interface implementation
+│   ├── models.sh              # Model provider interface implementation
+│   └── copilot.sh             # Provider-specific management commands
+└── [future-provider]/         # Additional providers can be added here
+    ├── provider.sh
+    ├── models.sh
+    └── [provider].sh
+```
+
+**Adding New Providers:**
+
+1. Create `providers/{name}/` directory
+2. Implement `provider.sh` with `generate_ai_commit()` function
+3. Implement `models.sh` with model management functions
+4. Create management script with provider-specific commands
+5. Update `selected_provider.txt` to use new provider
+
 ### Using Multiple Config Files (Recommended)
 
-If you're using the multiple config file approach, add your customizations to `~/.config/lazygit/config.local.yml`. This file is loaded after the LazyCommit config, so your settings will override LazyCommit defaults.
+Add your customizations to `~/.config/lazygit/config.yml`. This file is loaded after the LazyCommit config, so your settings will override LazyCommit defaults.
 
-Example `config.local.yml`:
+Example `~/.config/lazygit/config.yml`:
 
 ```yaml
-# Customize AI prompts
+# Your personal lazygit configuration
 # (LazyCommit config is loaded first, then these settings override)
-
-# Customize keybindings
-keybinding:
-  universal:
-    # Override the default AI commit key
-    commitChanges: c  # Use 'c' instead of 'Ctrl+U'
 
 # Add your own custom commands
 customCommands:
@@ -261,21 +258,27 @@ customCommands:
     context: 'global'
     description: 'My custom command'
     command: 'echo "Hello from custom command"'
-```
 
-### Traditional Single Config Customization
+# Customize other lazygit settings
+gui:
+  theme:
+    # Your theme preferences
+```
 
 ### Modify AI Prompts
 
-Edit `lazycommit/commit_prompt.txt` to customize commit message generation:
+LazyCommit supports custom prompts with automatic fallback:
+
+1. **Custom Prompt**: Create `~/.config/lazygit/commit_prompt.txt` for your personal prompt
+2. **Default Prompt**: Falls back to `~/.config/lazygit/lazycommit/commit_prompt.txt`
 
 ```bash
+# Create your custom prompt (recommended)
+$EDITOR ~/.config/lazygit/commit_prompt.txt
+
+# Or edit the default prompt (may create git conflicts):> [!WARNING]
 $EDITOR ~/.config/lazygit/lazycommit/commit_prompt.txt
 ```
-
-### Add Custom Commands
-
-Extend `config.yml` with additional custom commands following the existing pattern.
 
 ## Repository as Subdirectory
 
@@ -285,27 +288,14 @@ to ensure compatibility regardless of the parent repository structure.
 
 ### Updating LazyCommit
 
-#### Multiple Config Setup
-
 ```bash
-# Update LazyCommit while preserving your customizations
-cd ~/.config/lazygit
-git stash push config.local.yml  # preserve your local config
+# Update LazyCommit while preserving your personal configuration
+cd ~/.config/lazygit/lazycommit
 git pull origin main
-git stash pop  # restore your local config
 ```
 
-Your personal settings in `~/.config/lazygit/config.local.yml` remain untouched with this approach.
-
-#### Traditional Setup
-
-```bash
-# Update LazyCommit (be careful with local changes)
-cd ~/.config/lazygit
-git stash  # if you have local changes
-git pull origin main
-git stash pop  # restore local changes if any
-```
+Your personal settings in `~/.config/lazygit/config.yml` remain completely
+untouched with this approach.
 
 ## Contributing
 
