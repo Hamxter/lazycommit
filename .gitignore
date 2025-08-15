@@ -1,8 +1,3 @@
-# Authentication and cache files
-copilot/auth.json
-copilot/models_cache.json
-copilot/selected_model.txt
-
 # Temporary files
 *.tmp
 *.temp
@@ -21,6 +16,10 @@ Thumbs.db
 # Logs
 *.log
 
-# Local configuration files
-config.local.yml
-sync-forgejo-config.sh
+# GitHub Copilot authentication data
+auth.json
+
+# Model cache and selection
+models_cache.json
+selected_model.txt
+selected_provider.txt
