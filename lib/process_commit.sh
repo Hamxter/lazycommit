@@ -10,13 +10,13 @@ commit_suggestions=$(cat)
 commit_msg_file=$(mktemp)
 
 # Clean the suggestions and save them to the file
-# Decode the ¦ delimiter back to newlines for proper multi-line commit messages
+# Decode the ||| delimiter back to newlines for proper multi-line commit messages
 cleaned_suggestions=$(echo "$commit_suggestions" | \
   sed 's/```[a-zA-Z]*//g' | \
   sed 's/```//g' | \
   sed 's/^[ \t]*//g' | \
   sed 's/[ \t]*$//g' | \
-  tr '¦' '\n')
+  sed 's/|||/\n/g')
 
 # Write the suggestions to the temporary file
 echo "$cleaned_suggestions" > "$commit_msg_file"

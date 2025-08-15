@@ -54,13 +54,13 @@ check_staged_changes() {
 clean_commit_response() {
     local response="$1"
     
-    # Clean the content and encode multi-line as single line with ¦ as delimiter
+    # Clean the content and encode multi-line as single line with ||| as delimiter
     # This allows lazygit's menuFromCommand to show it as one option
     echo "$response" | \
         sed 's/```[a-zA-Z]*//g' | \
         sed 's/```//g' | \
         sed '/^[[:space:]]*$/d' | \
         sed 's/^[[:space:]]*//; s/[[:space:]]*$//' | \
-        tr '\n' '¦' | \
-        sed 's/¦$//'
+        sed ':a;N;$!ba;s/\n/|||/g' | \
+        sed 's/|||$//'
 }
