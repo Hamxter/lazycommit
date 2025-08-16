@@ -13,7 +13,8 @@ additional AI providers.
 
 ## Features
 
-- 🤖 **AI Commit Messages**: Generate intelligent commit messages using AI providers
+- 🤖 **AI Commit Messages**: Generate intelligent commit messages using AI
+  providers
 - 🎯 **Multiple AI Models**: Support for different AI models with easy switching
 - 🔌 **Provider Architecture**: Modular system supporting multiple AI providers
   (GitHub Copilot included)
@@ -47,14 +48,17 @@ Add to your shell config (`~/.zshrc`, `~/.bashrc`, etc.):
 
 ```bash
 # LAZYGIT - Use multiple config files
-export LG_CONFIG_FILE="$HOME/.config/lazygit/lazycommit/config.yml,$HOME/.config/lazygit/config.yml"
+export LG_CONFIG_FILE="$HOME/.config/lazygit/lazycommit/config.yml,\
+$HOME/.config/lazygit/config.yml"
 ```
 
 #### Method B: Shell Alias
 
 ```bash
 # Add to ~/.bashrc, ~/.zshrc, etc.
-alias lg='lazygit --use-config-file="~/.config/lazygit/lazycommit/config.yml,~/.config/lazygit/config.yml"'
+alias lg='lazygit --use-config-file="\
+~/.config/lazygit/lazycommit/config.yml,\
+~/.config/lazygit/config.yml"'
 ```
 
 #### Step 3: Create Your Personal Config
@@ -124,6 +128,20 @@ Access provider-specific management options. For GitHub Copilot:
 
 Switch between available AI models for commit generation.
 
+#### Performance Recommendations
+
+For optimal performance, consider selecting a smaller or mini model like
+`gpt-4o-mini` for commit message generation. Since commit messages are
+relatively simple text summaries, they don't require the advanced capabilities
+of larger models. Using smaller models provides:
+
+- **Faster response times** - Quicker commit message generation
+- **Lower latency** - Reduced waiting time during your workflow
+- **Better reliability** - Less likely to hit rate limits or timeouts
+
+Most mini/small models are perfectly capable of generating high-quality commit
+messages while significantly improving your development workflow speed.
+
 ## File Structure
 
 ### Multiple Config Setup (Recommended)
@@ -178,7 +196,9 @@ echo $LG_CONFIG_FILE
 lazygit --help
 
 # Or test with explicit config files
-lazygit --use-config-file="~/.config/lazygit/lazycommit/config.yml,~/.config/lazygit/config.yml" --help
+lazygit --use-config-file="\
+~/.config/lazygit/lazycommit/config.yml,\
+~/.config/lazygit/config.yml" --help
 
 # Check if files exist
 ls -la ~/.config/lazygit/lazycommit/config.yml
@@ -209,7 +229,9 @@ cd ~/.config/lazygit/lazycommit && git pull
 
 ### Using Multiple Config Files (Recommended)
 
-Add your customizations to `~/.config/lazygit/config.yml`. This file is loaded after the LazyCommit config, so your settings will override LazyCommit defaults.
+Add your customizations to `~/.config/lazygit/config.yml`. This file is loaded
+after the LazyCommit config, so your settings will override LazyCommit
+defaults.
 
 Example `~/.config/lazygit/config.yml`:
 
@@ -234,8 +256,10 @@ gui:
 
 LazyCommit supports custom prompts with automatic fallback:
 
-1. **Custom Prompt**: Create `~/.config/lazygit/commit_prompt.txt` for your personal prompt
-2. **Default Prompt**: Falls back to `~/.config/lazygit/lazycommit/commit_prompt.txt`
+1. **Custom Prompt**: Create `~/.config/lazygit/commit_prompt.txt` for your
+   personal prompt
+2. **Default Prompt**: Falls back to
+   `~/.config/lazygit/lazycommit/commit_prompt.txt`
 
 ```bash
 # Create your custom prompt (recommended)
@@ -276,7 +300,8 @@ MIT License - see LICENSE file for details.
 
 ## Acknowledgments
 
-- [lazygit](https://github.com/jesseduffield/lazygit) - Amazing terminal UI for git
+- [lazygit](https://github.com/jesseduffield/lazygit) - Amazing terminal UI
+  for git
 - [GitHub Copilot](https://github.com/features/copilot) - AI pair programmer
 - [rxtsel's dotfiles](https://github.com/rxtsel/.dot) - Original configuration
   inspiration and foundation for this project
